@@ -1,0 +1,37 @@
+import { server } from '../store';
+import axios from 'axios';
+
+export const getAllCourses = searchQuery => async dispatch => {
+  const { title, category } = searchQuery;
+  try {
+    dispatch({ type: 'allCoursesStart' });
+
+    const { data } = await axios.get(
+      `${server}/courses?title=${title}&category=${category}`
+    );
+
+    dispatch({ type: 'allCoursesSuccess', payload: data.courses });
+  } catch (error) {
+    dispatch({
+      type: 'allCoursesFail',
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const getCourseLectures = courseId => async dispatch => {
+  try {
+    dispatch({ type: 'getCourseStart' });
+
+    const { data } = await axios.get(`${server}/courses/${courseId}`, {
+      withCredentials: true, //bcoz we are using cookies
+    });
+
+    dispatch({ type: 'getCourseSuccess', payload: data.lectures });
+  } catch (error) {
+    dispatch({
+      type: 'getCourseFail',
+      payload: error.response.data.message,
+    });
+  }
+};
